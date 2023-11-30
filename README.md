@@ -1,2 +1,2 @@
 # shop4
-Ecomerce application
+Ecommerce app
