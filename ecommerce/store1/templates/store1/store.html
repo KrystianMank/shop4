@@ -1,3 +1,26 @@
+{% extends "store1/main.html" %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-<h1>Store</h1>
+
+{% block content %}
+    
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="box-element product">
+                <img class="thumbnail" src="{% static 'images/placeholder.png' %}">
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="box-element product">
+                <img class="thumbnail" src="{% static 'images/placeholder.png' %}">
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="box-element product">
+                <img class="thumbnail" src="{% static 'images/placeholder.png' %}">
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
