@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 def store(request):
     context = {}
     return render(request, 'store1/store.html', context)
