@@ -31,6 +31,8 @@ def cart(request):
     context = {'cartItems':cartItems,'items':items, 'order':order}
     return render(request, 'store/cart.html', context)
 
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 def checkout(request):
     if request.user.is_authenticated:
         customer = request.user.customer
@@ -64,3 +66,34 @@ def updateItem(request):
         orderItem.delete()
 
     return JsonResponse("Dodano do koszyka: ", safe=False)
+
+def processOrder(request):
+    transaction_id = datetime.date.now().timestamp()
+    data = json.loads(request.body)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer = customer, complete= False)
+        total = data['form']['total']
+        order.transaction_id = transaction_id
+
+        if total == float(order.get_cart_total):
+            print("Order poszedlł...")
+        order.complete = True
+
+        if order.shipping == True:
+            ShippingAddress.objects.create(
+                customer = customer,
+                order = order,
+                address = data['shipping']['address'],
+                city = data['shipping']['city'],
+                state = data['shipping']['state'],
+                zipcode = data['shipping']['zipcode'],
+            )
+            order.save()
+    else:
+        print('User is not logged...')
+
+
+    return JsonResponse("Payment submited...", safe=False)
+
