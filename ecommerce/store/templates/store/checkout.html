@@ -33,7 +33,8 @@
                         </div>
                         <div class="form-filed">
                             <input class="form-control" type ="text" name="zipcode" placeholder="ZIP code">
-                        </div>  
+                        </div>
+             
                        </div>   
                        <hr>
                        <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">                 
@@ -43,7 +44,6 @@
             <div class="box-element hidden" id="payment-info">
                 <small>Paypal options</small>
                 <button id="make-payment">Make payment</button>
-
             </div>
         </div>
         <div class="col-lg-6">
@@ -56,11 +56,10 @@
                     <div class="cart-row">
                         <div class="srodek" style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
                         <div style="flex:2"><p>{{ item.product.name }}</p></div>
-                        <div style="flex:1"><p>{{ item.product.price | floatformat:2 }} PLN</p></div>
-                        <div style="flex:1"><p>x{{ item.quantity }}</p> </div>
+                        <div class="wprawo" style="flex:1"><p>{{ item.product.price | floatformat:2 }} PLN </p></div>
+                        <div style="flex:1"><p> x {{ item.quantity  }}</p> </div>
                     </div>
                 {% endfor %}
-                    
                 <h5><strong>Items: {{ order.get_cart_items }}</strong></h5>
                 <h5><strong>Total: {{ order.get_cart_total | floatformat:2 }} PLN</strong></h5>
             </div>
@@ -68,59 +67,58 @@
     </div>
 
     <script type="text/javascript">
-        var shipping = '{{ order.shipping }}';
-        var total = '{{ order.get_cart_total }}'
-        if(shipping == 'False'){
-            document.getElementById('shipping-info').innerHTML = '';
-        }
-        if(user != 'AnonymousUser'){
-            document.getElementById('user-info').innerHTML = '';
-        }
-        if(shipping == 'False' && user != 'AnonymousUser'){
-            document.getElementById('form-wrapper').classList.add("hidden");
-            document.getElementById('payment-info').classList.remove("hidden");
-        }
-        var form = document.getElementById('form');
-        form.addEventListener('submit', function(e){
-            e.preventDefault();
-            console.log("Form submited....");
-            document.getElementById('form-button').classList.add("hidden");
-            document.getElementById('payment-info').classList.remove("hidden");
-        });
-
-        document.getElementById('make-payment').addEventListener('click', function(e){
-            submitFormData();
-        });
-        function submitFormData(){
-            console.log("Kliknięto...");
-            var userFormData = {
-                'name' : null,
-                'email' : null,
-                'total' : total
+            var shipping = '{{ order.shipping }}';
+            var total = '{{ order.get_cart_total }}';
+            if (shipping == 'False'){
+                document.getElementById('shipping-info').innerHTML = '';
+            }
+            if (user != 'AnonymousUser'){
+                document.getElementById('user-info').innerHTML = '';
             }
 
-            var shippingInfo = {
-                'address' : null,
-                'city' : null,
-                'state' : null,
-                'zipcode' : null
+            if (shipping == 'False' && user != 'AnonymousUser'){
+                document.getElementById('form-wrapper').classList.add("hidden");
+                document.getElementById('payment-info').classList.remove("hidden");
             }
+          
+            var form = document.getElementById('form');
+            form.addEventListener('submit', function(e){
+                e.preventDefault()
+                console.log('Form submitted... ');
+                document.getElementById('form-button').classList.add("hidden");
+                document.getElementById('payment-info').classList.remove("hidden");
+            })
 
-            if(shipping != 'False'){
-                shippingInfo.address = form.address.value;
-                shippingInfo.city = form.city.value;
-                shippingInfo.state = form.state.value;
-                shippingInfo.zipcode = form.zipcode.value;
-            }
+            document.getElementById('make-payment').addEventListener('click', function(e){
+                submitFormData();
+            })
 
-            if(user == 'AnonymousUser'){
-                userFormData.name = form.name.value;
-                userFormData.email = form.emial.value;
-            }
+            function submitFormData(){
+                console.log("Kliknięto.....");
 
-            console.log(shippingInfo);
-            console.log(userFormData);
-            
+                var userFormData = {
+                    'name': null,
+                    'email': null,
+                    'total': total
+                }
+
+                var shippingInfo = {
+                    'address': null,
+                    'city': null,
+                    'state': null,
+                    'zipcode': null,
+                }
+                if (shipping != 'False'){
+                    shippingInfo.address = form.address.value
+                    shippingInfo.city = form.city.value
+                    shippingInfo.state = form.state.value
+                    shippingInfo.zipcode= form.zipcode.value
+                }
+
+                if (user == 'AnonymousUser'){
+                    userFormData.name = form.name.value
+                    userFormData.email = form.email.value
+                }
             var url = "/process_order/";
             fetch(url, {
                 method: 'POST',
@@ -128,15 +126,19 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken,
                 },
-                body:JSON.stringify({'form':userFormData, 'shipping':shippingInfo}),
+                body:JSON.stringify({'form':userFormData, 'shipping': shippingInfo}),
             })
-            .then((response) => response.json())
-            .then((data ) => {
-                console.log("success...");
+            .then ((response) => response.json())
+            .then ((data) => {
+                console.log("Success...");
                 alert("Transaction completed...");
+                cart= {}
+                document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
                 window.location.href = "{% url 'store' %}";
             })
-        }
+
+            }
 
     </script>
 {% endblock content %}
+
